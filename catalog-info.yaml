@@ -1,9 +1,9 @@
-# UPDATED catalog-info.yaml in your GitHub repo
+# UPDATED catalog-info.yaml on GitHub
 apiVersion: backstage.io/v1alpha1
 kind: Template
 metadata:
   name: azure-resource-group-creator
-  title: Azure Resource Group Creator
+  title: Azure Resource Group Creator # This title will be shown in Backstage UI
   description: Create a new Azure Resource Group via GitHub Actions and Terraform
   tags:
     - azure
@@ -13,12 +13,12 @@ metadata:
   annotations:
     backstage.io/techdocs-ref: url:https://github.com/marshaldaulkhai/my-azure-infrastructure/tree/main
 
-spec:
+spec: # <--- This is the 'spec' section for the Template kind
   owner: user:guest
   type: service
   system: infrastructure-automation
 
-  # --- START OF CONTENT FROM YOUR template.yaml (move here) ---
+  # --- START OF CONTENT FROM YOUR template.yaml - MOVED HERE ---
   parameters:
     - title: Resource Group Details
       required:
@@ -46,11 +46,11 @@ spec:
       name: Create Repository
       action: github:repo:create
       input:
-        repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }} # Example repo name
+        repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
         description: Terraform for Azure Resource Group ${{ parameters.resourceGroupName }}
         defaultBranch: main
         visibility: public
-        token: ${{ secrets.GITHUB_TOKEN }} # Ensure this secret is configured in Backstage or GH actions
+        token: ${{ secrets.GITHUB_TOKEN }}
     - id: checkout-template
       name: Checkout Template
       action: fetch:template
@@ -63,7 +63,7 @@ spec:
       action: publish:github
       input:
         repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
-        branch: main # Default branch
+        branch: main
         defaultBranch: main
         token: ${{ secrets.GITHUB_TOKEN }}
     - id: trigger-workflow
@@ -71,8 +71,8 @@ spec:
       action: github:actions:dispatch
       input:
         repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
-        workflowId: deploy-rg.yml # Name of your workflow file
-        branch: main # Branch to dispatch the workflow on
+        workflowId: deploy-rg.yml
+        branch: main
         token: ${{ secrets.GITHUB_TOKEN }}
         payload:
           resource_group_name: ${{ parameters.resourceGroupName }}
