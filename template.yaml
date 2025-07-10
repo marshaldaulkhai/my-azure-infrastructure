@@ -1,0 +1,67 @@
+# template.yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: azure-resource-group-template
+  title: Azure Resource Group Creator
+  description: Create a new Azure Resource Group via GitHub Actions and Terraform
+  tags:
+    - azure
+    - terraform
+    - resource-group
+    - infra
+spec:
+  owner: user:guest # or your Backstage user like user:marsh
+  type: service
+
+  parameters:
+    - title: Basic Information
+      required:
+        - resourceGroupName
+        - location
+      properties:
+        resourceGroupName:
+          title: Resource Group Name
+          type: string
+          description: Unique name for your Azure Resource Group.
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        location:
+          title: Azure Region
+          type: string
+          description: Azure region (e.g., eastus, westeurope).
+          default: eastus
+          enum:
+            - eastus
+            - westus
+            - westeurope
+            - northeurope
+            # Add more regions as needed
+
+  steps:
+    - id: log-start
+      name: Log Start
+      action: 'debug:log'
+      input:
+        message: 'Starting the Azure Resource Group creation process...'
+
+    - id: trigger-github-actions
+      name: Trigger GitHub Actions Workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: 'github.com?repo=my-azure-infrastructure&owner=marshaldaulkhai'
+        workflowId: 'deploy-rg.yml' # Name of your workflow file
+        branch: 'main' # Or the branch your workflow is on
+        payload:
+          resource_group_name: '${{ parameters.resourceGroupName }}'
+          location: '${{ parameters.location }}'
+
+    - id: log-end
+      name: Log End
+      action: 'debug:log'
+      input:
+        message: 'Workflow dispatched. Check GitHub Actions for deployment status.'
+
+  output:
+    text: Workflow to deploy Azure Resource Group has been dispatched to GitHub Actions.
