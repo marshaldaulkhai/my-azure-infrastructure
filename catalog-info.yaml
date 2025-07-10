@@ -1,9 +1,9 @@
-# UPDATED catalog-info.yaml on GitHub
+# UPDATED catalog-info.yaml on GitHub (your file should now contain this full structure)
 apiVersion: backstage.io/v1alpha1
 kind: Template
 metadata:
   name: azure-resource-group-creator
-  title: Azure Resource Group Creator # This title will be shown in Backstage UI
+  title: Azure Resource Group Creator
   description: Create a new Azure Resource Group via GitHub Actions and Terraform
   tags:
     - azure
@@ -13,75 +13,14 @@ metadata:
   annotations:
     backstage.io/techdocs-ref: url:https://github.com/marshaldaulkhai/my-azure-infrastructure/tree/main
 
-spec: # <--- This is the 'spec' section for the Template kind
+spec: # <--- THIS IS THE 'spec' section for the Template kind
   owner: user:guest
   type: service
   system: infrastructure-automation
 
-  # --- START OF CONTENT FROM YOUR template.yaml - MOVED HERE ---
-  parameters:
-    - title: Resource Group Details
-      required:
-        - resourceGroupName
-        - azureLocation
-      properties:
-        resourceGroupName:
-          title: Resource Group Name
-          type: string
-          description: Unique name for the Azure Resource Group.
-          ui:autofocus: true
-          ui:options:
-            rows: 5
-        azureLocation:
-          title: Azure Location
-          type: string
-          description: Azure region for the resource group (e.g., eastus, westeurope).
-          enum:
-            - eastus
-            - westeurope
-            - centralus
-          ui:widget: select
-  steps:
-    - id: create-repo
-      name: Create Repository
-      action: github:repo:create
-      input:
-        repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
-        description: Terraform for Azure Resource Group ${{ parameters.resourceGroupName }}
-        defaultBranch: main
-        visibility: public
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - id: checkout-template
-      name: Checkout Template
-      action: fetch:template
-      input:
-        url: ./content
-        copyWithoutRender:
-          - .github/workflows/*.yaml
-    - id: publish
-      name: Publish
-      action: publish:github
-      input:
-        repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
-        branch: main
-        defaultBranch: main
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - id: trigger-workflow
-      name: Trigger GitHub Actions Workflow
-      action: github:actions:dispatch
-      input:
-        repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
-        workflowId: deploy-rg.yml
-        branch: main
-        token: ${{ secrets.GITHUB_TOKEN }}
-        payload:
-          resource_group_name: ${{ parameters.resourceGroupName }}
-          azure_location: ${{ parameters.azureLocation }}
-  output:
-    links:
-      - title: Go to Repository
-        url: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
-      - title: Go to GitHub Actions Workflow
-        url: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}/actions
-      - title: Open in Azure Portal
-        url: https://portal.azure.com/#@/resource/${{ parameters.resourceGroupName }}
+  parameters: # <--- Parameters for the template's UI
+    # ... (your parameter definitions go here)
+  steps: # <--- Actions the scaffolder will perform
+    # ... (your step definitions go here)
+  output: # <--- What the template will output
+    # ... (your output definitions go here)
