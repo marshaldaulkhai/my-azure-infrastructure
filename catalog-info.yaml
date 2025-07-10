@@ -1,0 +1,23 @@
+# catalog-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component # Or kind: Template if you prefer to explicitly register it as a Template entity
+metadata:
+  name: my-azure-infrastructure-repo
+  description: Infrastructure repository for Azure deployments
+  tags:
+    - azure
+    - infrastructure
+    - terraform
+  annotations:
+    # This annotation links this component to its template
+    backstage.io/techdocs-ref: url:https://github.com/marshaldaulkhai/my-azure-infrastructure/tree/main
+    # This annotation tells Backstage where the template is located within this repository
+    backstage.io/template-path: template.yaml
+    # This annotation also makes the template discoverable by the scaffolder
+    backstage.io/managed-by-location: url:https://github.com/marshaldaulkhai/my-azure-infrastructure/blob/main/template.yaml
+
+spec:
+  type: service # This repository could be considered a 'service' that provides infra automation
+  lifecycle: experimental # or production, depending on your stage
+  owner: user:guest # or your Backstage user like user:marshal
+  system: infrastructure-automation # You can define systems in Backstage to group related components
