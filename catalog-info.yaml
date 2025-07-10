@@ -1,9 +1,9 @@
-# catalog-info.yaml
+# UPDATED catalog-info.yaml in your GitHub repo
 apiVersion: backstage.io/v1alpha1
-kind: Template # <-- THIS MUST BE 'Template'
+kind: Template
 metadata:
-  name: azure-resource-group-creator # This name will appear on the Create page
-  title: Azure Resource Group Creator # This title will be shown in Backstage UI
+  name: azure-resource-group-creator
+  title: Azure Resource Group Creator
   description: Create a new Azure Resource Group via GitHub Actions and Terraform
   tags:
     - azure
@@ -11,16 +11,77 @@ metadata:
     - resource-group
     - infra
   annotations:
-    # This annotation links this template to its TechDocs documentation (if any)
     backstage.io/techdocs-ref: url:https://github.com/marshaldaulkhai/my-azure-infrastructure/tree/main
 
 spec:
-  type: service # This template creates a 'service' type component
-  owner: user:guest # or your Backstage user like user:marshal
+  owner: user:guest
+  type: service
   system: infrastructure-automation
-  # This section tells Backstage where the actual template.yaml file is
-  template:
-    repo: https://github.com/marshaldaulkhai/my-azure-infrastructure
-    path: template.yaml
-    supports:
-      - github
+
+  # --- START OF CONTENT FROM YOUR template.yaml (move here) ---
+  parameters:
+    - title: Resource Group Details
+      required:
+        - resourceGroupName
+        - azureLocation
+      properties:
+        resourceGroupName:
+          title: Resource Group Name
+          type: string
+          description: Unique name for the Azure Resource Group.
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        azureLocation:
+          title: Azure Location
+          type: string
+          description: Azure region for the resource group (e.g., eastus, westeurope).
+          enum:
+            - eastus
+            - westeurope
+            - centralus
+          ui:widget: select
+  steps:
+    - id: create-repo
+      name: Create Repository
+      action: github:repo:create
+      input:
+        repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }} # Example repo name
+        description: Terraform for Azure Resource Group ${{ parameters.resourceGroupName }}
+        defaultBranch: main
+        visibility: public
+        token: ${{ secrets.GITHUB_TOKEN }} # Ensure this secret is configured in Backstage or GH actions
+    - id: checkout-template
+      name: Checkout Template
+      action: fetch:template
+      input:
+        url: ./content
+        copyWithoutRender:
+          - .github/workflows/*.yaml
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
+        branch: main # Default branch
+        defaultBranch: main
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - id: trigger-workflow
+      name: Trigger GitHub Actions Workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
+        workflowId: deploy-rg.yml # Name of your workflow file
+        branch: main # Branch to dispatch the workflow on
+        token: ${{ secrets.GITHUB_TOKEN }}
+        payload:
+          resource_group_name: ${{ parameters.resourceGroupName }}
+          azure_location: ${{ parameters.azureLocation }}
+  output:
+    links:
+      - title: Go to Repository
+        url: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}
+      - title: Go to GitHub Actions Workflow
+        url: https://github.com/marshaldaulkhai/${{ parameters.resourceGroupName }}/actions
+      - title: Open in Azure Portal
+        url: https://portal.azure.com/#@/resource/${{ parameters.resourceGroupName }}
