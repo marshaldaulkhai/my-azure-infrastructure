@@ -32,7 +32,7 @@ spec:
       name: Trigger GitHub Action
       action: github:actions:dispatch
       input:
-        repoUrl: github.com/marshaldaulkhai/my-azure-infrastructure
+        repoUrl: 	github.com?repo=my-azure-infrastructure&owner=marshaldaulkhai
         workflowId: deploy-rg.yml
         branchOrTagName: main
         workflowInputs:
