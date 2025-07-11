@@ -4,7 +4,51 @@ kind: Template
 metadata:
   name: azure-resource-group-creator
   title: Azure Resource Group Creator
+  description: Create a new Azure Resource Group via GitHub Actions and TerraformapiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: azure-resource-group-creator
+  title: Azure Resource Group Creator
   description: Create a new Azure Resource Group via GitHub Actions and Terraform
+  tags:
+    - azure
+    - terraform
+    - resource-group
+    - infra
+  annotations:
+    backstage.io/techdocs-ref: url:https://github.com/marshaldaulkhai/my-azure-infrastructure/tree/main
+
+spec:
+  owner: user:guest
+  type: service
+  parameters:
+    - title: Resource Group Details
+      required: [resource_group_name, location]
+      properties:
+        resource_group_name:
+          title: Resource Group Name
+          type: string
+          description: Name for the Azure Resource Group
+        location:
+          title: Azure Region
+          type: string
+          description: Azure region (e.g., eastus, westeurope)
+  steps:
+    - id: trigger-action
+      name: Trigger GitHub Action
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com/marshaldaulkhai/my-azure-infrastructure
+        workflowId: deploy-rg.yml
+        branchOrTagName: main
+        workflowInputs:
+          resource_group_name: ${{ parameters.resource_group_name }}
+          location: ${{ parameters.location }}
+  output:
+    links:
+      - title: View GitHub Actions Run
+        url: "https://github.com/marshaldaulkhai/my-azure-infrastructure/actions"
+
   tags:
     - azure
     - terraform
