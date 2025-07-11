@@ -1,10 +1,4 @@
-# UPDATED catalog-info.yaml on GitHub (your file should now contain this full structure)
-apiVersion: backstage.io/v1alpha1
-kind: Template
-metadata:
-  name: azure-resource-group-creator
-  title: Azure Resource Group Creator
-  description: Create a new Azure Resource Group via GitHub Actions and TerraformapiVersion: scaffolder.backstage.io/v1beta3
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: azure-resource-group-creator
@@ -48,23 +42,3 @@ spec:
     links:
       - title: View GitHub Actions Run
         url: "https://github.com/marshaldaulkhai/my-azure-infrastructure/actions"
-
-  tags:
-    - azure
-    - terraform
-    - resource-group
-    - infra
-  annotations:
-    backstage.io/techdocs-ref: url:https://github.com/marshaldaulkhai/my-azure-infrastructure/tree/main
-
-spec: # <--- THIS IS THE 'spec' section for the Template kind
-  owner: user:guest
-  type: service
-  system: infrastructure-automation
-
-  parameters: # <--- Parameters for the template's UI
-    # ... (your parameter definitions go here)
-  steps: # <--- Actions the scaffolder will perform
-    # ... (your step definitions go here)
-  output: # <--- What the template will output
-    # ... (your output definitions go here)
